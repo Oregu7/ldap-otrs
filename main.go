@@ -12,7 +12,7 @@ import (
 
 // User данные пользователя
 type User struct {
-	FullName, LastName, Company, Email, Password, Phone string
+	FullName, LastName, Username, Company, Password, Phone string
 }
 
 func main() {
@@ -34,7 +34,7 @@ func main() {
 		Scope:        2,
 		DerefAliases: 0,
 		SizeLimit:    300,
-		Filter:       "(mail=*)",
+		Filter:       "(userPrincipalName=*)",
 		Attributes:   []string{"mail", "sn", "giveName", "userPrincipalName", "displayName", "company", "password", "telephoneNumber"},
 		Controls:     nil,
 	})
@@ -52,8 +52,8 @@ func main() {
 		user := User{
 			entry.GetAttributeValue("displayName"),
 			entry.GetAttributeValue("sn"),
+			entry.GetAttributeValue("userPrincipalName"),
 			entry.GetAttributeValue("company"),
-			entry.GetAttributeValue("mail"),
 			entry.GetAttributeValue("password"),
 			entry.GetAttributeValue("telephoneNumber"),
 		}
