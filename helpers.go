@@ -13,6 +13,7 @@ func getMD5Hash(text string) string {
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
+// createUsersPattern создаем паттерн из логинов пользователей для поиска
 func createUsersPattern(users []*User) string {
 	var pattern string
 	for i, user := range users {
@@ -25,12 +26,13 @@ func createUsersPattern(users []*User) string {
 	return pattern
 }
 
+// getUpdates получаем список новых пользователей из LDAP
 func getUpdates(users []*User, usersLdap []*UserLDAP) []*UserLDAP {
 	updates := []*UserLDAP{}
 	pattern := createUsersPattern(users)
 	for _, item := range usersLdap {
 		// ищем обновления
-		loginHash := getMD5Hash(item.Username)
+		loginHash := getMD5Hash(item.Login)
 		mtch, _ := regexp.MatchString(pattern, loginHash)
 		if len(pattern) == 0 || !mtch {
 			updates = append(updates, item)
