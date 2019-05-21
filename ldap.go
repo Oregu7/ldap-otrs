@@ -12,6 +12,7 @@ type UserLDAP struct {
 	FullName, LastName, Username, Company, Mail, Phone string
 }
 
+// findUsersFromLDAP достаем пользователей из LDAP
 func findUsersFromLDAP() ([]*UserLDAP, error) {
 	users := []*UserLDAP{}
 	// подключаемся к серверу ldap

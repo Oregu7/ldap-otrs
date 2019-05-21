@@ -3,17 +3,22 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"os"
 
 	_ "github.com/lib/pq"
 )
 
 // User данные пользователя
 type User struct {
-	FullName, LastName, Username, Company, Mail, Phone string
+	ID                                          int
+	Login, Password, Title, FirstName, LastName string
 }
 
+// getUsersFromDB получаем пользователей из базы
 func getUsersFromDB() ([]*User, error) {
-	connStr := "user=postgres password=mypass dbname=productdb sslmode=disable"
+	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_NAME"))
+
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		panic(err)
@@ -25,11 +30,11 @@ func getUsersFromDB() ([]*User, error) {
 		panic(err)
 	}
 	defer rows.Close()
-	users := []User{}
+	users := []*User{}
 
 	for rows.Next() {
-		user := user{}
-		err := rows.Scan(&p.id, &p.model, &p.company, &p.price)
+		user := &User{}
+		err := rows.Scan(user.ID, user.Login, user.Password, user.Title, user.FirstName, user.LastName)
 		if err != nil {
 			fmt.Println(err)
 			continue
@@ -37,4 +42,5 @@ func getUsersFromDB() ([]*User, error) {
 		users = append(users, user)
 	}
 
+	return users, nil
 }

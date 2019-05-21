@@ -12,7 +12,7 @@ func main() {
 	if godotenv.Load() != nil {
 		log.Fatal("Error loading .env file")
 	}
-	users, err := findUsersFromLDAP()
+	users, err := getUsersFromDB()
 	if err != nil {
 		log.Fatal(err)
 	}
