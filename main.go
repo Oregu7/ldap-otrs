@@ -16,7 +16,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(users)
 
-	fmt.Scanln()
+	updates := getUpdates(users, []*UserLDAP{&UserLDAP{Username: "roo@localhost"}})
+	fmt.Println(updates)
 }
