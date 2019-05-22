@@ -37,7 +37,7 @@ func findUsersFromLDAP() ([]*UserLDAP, error) {
 		DerefAliases: 0,
 		SizeLimit:    300,
 		Filter:       "(userPrincipalName=*)",
-		Attributes:   []string{"mail", "sn", "giveName", "userPrincipalName", "displayName", "company", "mail", "telephoneNumber"},
+		Attributes:   []string{"mail", "sn", "givenName", "userPrincipalName", "displayName", "company", "mail", "telephoneNumber"},
 		Controls:     nil,
 	})
 	if err != nil {
@@ -52,7 +52,7 @@ func findUsersFromLDAP() ([]*UserLDAP, error) {
 		user := &UserLDAP{
 			entry.GetAttributeValue("displayName"),
 			entry.GetAttributeValue("sn"),
-			entry.GetAttributeValue("giveName"),
+			entry.GetAttributeValue("givenName"),
 			entry.GetAttributeValue("userPrincipalName"),
 			entry.GetAttributeValue("company"),
 			entry.GetAttributeValue("mail"),

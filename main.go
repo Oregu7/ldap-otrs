@@ -19,15 +19,15 @@ func main() {
 		log.Fatal(err)
 	}
 	// достаем пользователей из ldap
-	/*usersLdap, err := findUsersFromLDAP()
+	usersLdap, err := findUsersFromLDAP()
 	if err != nil {
 		log.Fatal(err)
-	}*/
+	}
 	// получаем обновления и ожидаем создание новых пользователей
-	updates := getUpdates(users, []*UserLDAP{&UserLDAP{Login: "ole@localhost", FirstName: "Oleg", LastName: "An"}})
+	updates := getUpdates(users, usersLdap)
 	wg.Add(len(updates))
 	for _, item := range updates {
-		go createUser(item, &wg)
+		createUser(item, &wg)
 	}
 	wg.Wait()
 	log.Println("[Синхронизация завершена...]")

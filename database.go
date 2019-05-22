@@ -54,13 +54,14 @@ func getUsersFromDB() ([]*User, error) {
 // createUser создаем пользователя в бд
 func createUser(user *UserLDAP, wg *sync.WaitGroup) error {
 	defer wg.Done()
+	// подключаемся к бд
 	db, err := createConnection()
 	if err != nil {
 		user.errorLog(err)
 		return err
 	}
 	defer db.Close()
-
+	// создаем пользователя
 	sqlQuery := "insert into users (login,pw,title,first_name,last_name,valid_id,create_time," +
 		"create_by,change_time,change_by) values ($1, $2, 'Mr/Ms', $3, $4, 1, $5, 1, $5, 1)"
 	_, err = db.Exec(sqlQuery, user.Login, user.Password, user.FirstName, user.LastName, time.Now())
