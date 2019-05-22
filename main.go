@@ -27,7 +27,7 @@ func main() {
 	updates := getUpdates(users, usersLdap)
 	wg.Add(len(updates))
 	for _, item := range updates {
-		createUser(item, &wg)
+		go createUser(item, &wg)
 	}
 	wg.Wait()
 	log.Println("[Синхронизация завершена...]")
