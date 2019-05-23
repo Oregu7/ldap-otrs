@@ -2,18 +2,10 @@ package main
 
 import (
 	"crypto/tls"
-	"fmt"
 	"os"
 
 	ldap "gopkg.in/ldap.v3"
 )
-
-// UserLDAP данные пользователя
-type UserLDAP struct {
-	FullName, LastName, FirstName, Login string
-	Company, Mail, Phone                 string
-	Password                             string
-}
 
 // findUsersFromLDAP достаем пользователей из LDAP
 func findUsersFromLDAP() ([]*UserLDAP, error) {
@@ -63,12 +55,4 @@ func findUsersFromLDAP() ([]*UserLDAP, error) {
 	}
 
 	return users, nil
-}
-
-func (user *UserLDAP) successLog() {
-	fmt.Printf("[OK] Пользователь: (%s %s)\n", user.FullName, user.Login)
-}
-
-func (user *UserLDAP) errorLog(err error) {
-	fmt.Printf("[ERROR] Пользователь: (%s %s) - %s\n", user.FullName, user.Login, err.Error())
 }

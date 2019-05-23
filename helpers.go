@@ -26,8 +26,16 @@ func createUsersPattern(users []*User) string {
 	return pattern
 }
 
+func createUsersHashMap(users []UserHashed) map[string]string {
+	hashMap := make(map[string]string)
+	for _, user := range users {
+		hashMap[user.getHashMapKey()] = user.getPropsToken()
+	}
+	return hashMap
+}
+
 // getUpdates получаем список новых пользователей из LDAP
-func getUpdates(users []*User, usersLdap []*UserLDAP) []*UserLDAP {
+func getUserUpdates(users []*User, usersLdap []*UserLDAP) []*UserLDAP {
 	updates := []*UserLDAP{}
 	pattern := createUsersPattern(users)
 	for _, item := range usersLdap {
@@ -40,4 +48,24 @@ func getUpdates(users []*User, usersLdap []*UserLDAP) []*UserLDAP {
 	}
 
 	return updates
+}
+
+// getUpdates получаем список новых и changed клиентов из LDAP
+func getCustomerUserUpdates(customerUsers []*CustomerUser, usersLdap []*UserLDAP) ([]*UserLDAP, []*UserLDAP) {
+	updates := []*UserLDAP{}
+	changed := []*UserLDAP{}
+
+	hashMap := createUsersHashMap(customerUsers)
+	for _, item := range usersLdap {
+		// ищем обновления
+		if token, ok := hashMap[item.getHashMapKey()]; ok {
+			if token != item.getPropsToken() {
+				changed = append(changed, item)
+			}
+		} else {
+			updates = append(updates, item)
+		}
+	}
+
+	return updates, changed
 }

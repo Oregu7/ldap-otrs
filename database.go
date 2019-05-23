@@ -10,18 +10,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// User данные пользователя
-type User struct {
-	ID                         int
-	Login, FirstName, LastName string
-}
-
-type CustomerUser struct {
-	ID                         int
-	Login, Email, CustomerID   string
-	FirstName, LastName, Phone string
-}
-
 func createConnection() (*sql.DB, error) {
 	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_NAME"))
@@ -128,5 +116,9 @@ func createCustomerUser(user *UserLDAP, wg *sync.WaitGroup) error {
 	}
 
 	user.successLog()
+	return nil
+}
+
+func updateCustomerUser(user *UserLDAP) error {
 	return nil
 }

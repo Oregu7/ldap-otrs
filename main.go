@@ -24,7 +24,7 @@ func main() {
 		log.Fatal(err)
 	}
 	// получаем обновления и ожидаем создание новых пользователей
-	updates := getUpdates(users, usersLdap)
+	updates := getUserUpdates(users, usersLdap)
 	wg.Add(len(updates))
 	for _, item := range updates {
 		go createUser(item, &wg)
