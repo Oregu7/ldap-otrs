@@ -14,6 +14,6 @@ func main() {
 	}
 	log.Println("Служба синхронизации агентов запущена...")
 
-	gocron.Every(1).Day().At("7:30").Do(updateUsersTask)
+	gocron.Every(1).Day().At("07:30").Do(updateUsersTask)
 	<-gocron.Start()
 }
