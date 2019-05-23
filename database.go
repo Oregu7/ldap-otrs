@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -49,9 +50,10 @@ func getUsersFromDB() ([]*User, error) {
 func createUser(user *UserLDAP, wg *sync.WaitGroup) error {
 	defer wg.Done()
 	// подключаемся к бд
+	userType := "Агент"
 	db, err := createConnection()
 	if err != nil {
-		user.errorLog(err)
+		user.errorLog(err, userType)
 		return err
 	}
 	defer db.Close()
@@ -60,11 +62,11 @@ func createUser(user *UserLDAP, wg *sync.WaitGroup) error {
 		"create_by,change_time,change_by) values ($1, $2, 'Mr/Ms', $3, $4, 1, $5, 1, $5, 1)"
 	_, err = db.Exec(sqlQuery, user.Login, user.Password, user.FirstName, user.LastName, time.Now())
 	if err != nil {
-		user.errorLog(err)
+		user.errorLog(err, userType)
 		return err
 	}
 
-	user.successLog()
+	user.successLog(userType)
 	return nil
 }
 
@@ -77,7 +79,7 @@ func getCustomerUsersFromDB() ([]*CustomerUser, error) {
 	}
 	defer db.Close()
 	// получаем данные агентов
-	rows, err := db.Query("select id,login,email,first_name,last_name,phone from customer_user")
+	rows, err := db.Query("select id,login,email,first_name,last_name from customer_user")
 	if err != nil {
 		return users, err
 	}
@@ -85,7 +87,7 @@ func getCustomerUsersFromDB() ([]*CustomerUser, error) {
 	// считываем данные
 	for rows.Next() {
 		user := CustomerUser{}
-		err := rows.Scan(&user.ID, &user.Login, &user.Email, &user.FirstName, &user.LastName, &user.Phone)
+		err := rows.Scan(&user.ID, &user.Login, &user.Email, &user.FirstName, &user.LastName)
 		if err != nil {
 			fmt.Println(err)
 			continue
@@ -97,28 +99,55 @@ func getCustomerUsersFromDB() ([]*CustomerUser, error) {
 }
 
 // createCustomerUser создаем клиента в бд
-func createCustomerUser(user *UserLDAP, wg *sync.WaitGroup) error {
-	defer wg.Done()
+func createCustomerUser(user *UserLDAP) error {
 	// подключаемся к бд
 	db, err := createConnection()
 	if err != nil {
-		user.errorLog(err)
+		user.errorLog(err, "")
 		return err
 	}
 	defer db.Close()
 	// создаем пользователя
-	sqlQuery := "insert into users (login,email,customer_id,first_name,last_name,phone,valid_id,create_time," +
+	login := getCustomerUserLogin(user.Login)
+	sqlQuery := "insert into customer_user (login,email,customer_id,first_name,last_name,phone,valid_id,create_time," +
 		"create_by,change_time,change_by) values ($1, $2, $3, $4, $5, $6, 1, $7, 1, $7, 1)"
-	_, err = db.Exec(sqlQuery, user.Login, user.Mail, user.Company, user.FirstName, user.LastName, user.Phone, time.Now())
+	_, err = db.Exec(sqlQuery, login, user.Login, user.Company, user.FirstName, user.LastName, user.Phone, time.Now())
 	if err != nil {
-		user.errorLog(err)
+		user.errorLog(err, "")
 		return err
 	}
 
-	user.successLog()
+	user.successLog("")
 	return nil
 }
 
 func updateCustomerUser(user *UserLDAP) error {
+	// подключаемся к бд
+	db, err := createConnection()
+	userType := "Пользователь.Обновление"
+
+	if err != nil {
+		user.errorLog(err, userType)
+		return err
+	}
+	defer db.Close()
+	// создаем пользователя
+	sqlQuery := "update customer_user set customer_id = $1 where email = $2"
+	_, err = db.Exec(sqlQuery, user.Company, user.Login)
+	if err != nil {
+		user.errorLog(err, userType)
+		return err
+	}
+
+	user.successLog(userType)
 	return nil
+}
+
+func getCustomerUserLogin(mail string) string {
+	s := strings.Split(mail, "@")
+	if len(s) == 0 {
+		return mail
+	}
+
+	return s[0]
 }

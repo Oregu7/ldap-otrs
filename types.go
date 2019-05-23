@@ -28,12 +28,18 @@ type CustomerUser struct {
 	FirstName, LastName, Phone string
 }
 
-func (user *UserLDAP) successLog() {
-	fmt.Printf("[OK] Пользователь: (%s %s)\n", user.FullName, user.Login)
+func (user *UserLDAP) successLog(userType string) {
+	if userType == "" {
+		userType = "Пользователь"
+	}
+	fmt.Printf("[OK] %s: (%s %s)\n", userType, user.FullName, user.Login)
 }
 
-func (user *UserLDAP) errorLog(err error) {
-	fmt.Printf("[ERROR] Пользователь: (%s %s) - %s\n", user.FullName, user.Login, err.Error())
+func (user *UserLDAP) errorLog(err error, userType string) {
+	if userType == "" {
+		userType = "Пользователь"
+	}
+	fmt.Printf("[ERROR] %s: (%s %s) - %s\n", userType, user.FullName, user.Login, err.Error())
 }
 
 // реализуем интерфейс UserHashed

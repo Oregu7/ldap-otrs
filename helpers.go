@@ -26,7 +26,7 @@ func createUsersPattern(users []*User) string {
 	return pattern
 }
 
-func createUsersHashMap(users []UserHashed) map[string]string {
+func createUsersHashMap(users []*CustomerUser) map[string]string {
 	hashMap := make(map[string]string)
 	for _, user := range users {
 		hashMap[user.getHashMapKey()] = user.getPropsToken()
